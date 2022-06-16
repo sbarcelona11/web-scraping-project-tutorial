@@ -10,8 +10,6 @@ bs = BeautifulSoup(data, 'html.parser')
 tables = bs.find_all('table')
 
 pd_tesla_revenue = pd.DataFrame(columns=["Date", "Revenue"])
-features = pd.DataFrame()
-
 for index, table in enumerate(tables):
     if ("Tesla Quarterly Revenue" in str(table)):
         for row in table.tbody.find_all("tr"):
@@ -20,10 +18,9 @@ for index, table in enumerate(tables):
             if len(col) and col[1].text != '':
                 Date = col[0].text
                 Revenue = col[1].text.replace("$", "").replace(",", "")
-                aux_df = pd.DataFrame([{"Date":Date, "Revenue":Revenue}])
-                pd.concat([aux_df, features], axis=0, ignore_index=True)
-                
-pd_tesla_revenue = pd.concat([features, pd_tesla_revenue], axis=1)
+                aux_df = pd.DataFrame([{"Date": Date, "Revenue": Revenue}])
+                pd_tesla_revenue = pd.concat([pd_tesla_revenue, aux_df], axis=0)
+
 # List of records
 records_to_store = list(pd_tesla_revenue.to_records(index=False))
 # Generate DB
